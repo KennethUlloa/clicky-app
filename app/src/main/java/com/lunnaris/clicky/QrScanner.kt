@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -72,7 +73,6 @@ fun processImageProxy(
 
 @Composable
 fun QrScannerView(onQrCodeScanned: (String) -> Unit) {
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(
@@ -118,9 +118,11 @@ fun QrScannerView(onQrCodeScanned: (String) -> Unit) {
 
 @Composable
 fun QrScannerScreen(navController: NavController) {
-    var text by remember { mutableStateOf("Scan the QR") }
+    val context = LocalContext.current
+    var text by remember { mutableStateOf(context.getString(R.string.msg_scan_the_qr)) }
     val scope = rememberCoroutineScope()
     var failed by remember { mutableStateOf(false) }
+
 
     Column {
         Row(
@@ -137,19 +139,19 @@ fun QrScannerScreen(navController: NavController) {
                         serverAddress = parts[0]
                         tempCode = parts[1]
                     } catch (e: Exception) {
-                        text = "Wrong format, try again with other code"
+                        text = context.getString(R.string.msg_wrong_qr_string_format)
                         failed = true
                         return@QrScannerView
                     }
 
                     if (serverAddress.isEmpty() || tempCode.isEmpty()) {
                         failed = true
-                        text = "Wrong format, try again with other code"
+                        text = context.getString(R.string.msg_wrong_qr_string_format)
                         return@QrScannerView
                     }
 
                     scope.launch {
-                        text = "Connecting..."
+                        text = context.getString(R.string.msg_connecting)
                         Global.serverAddress = serverAddress
                         API.health()
                             .onSuccess {
@@ -161,12 +163,13 @@ fun QrScannerScreen(navController: NavController) {
                                     }
                                     .onFailure { err ->
                                         failed = true
-                                        text = err.message ?: "Unknown error"
+                                        val code = if (err is ApiException) { err.appCode } else { -100 }
+                                        text = getAppErrorMessage(context, code)
                                     }
                             }
                             .onFailure {
                                 failed = true
-                                text = "Invalid address, try again with another code"
+                                text = context.getString(R.string.msg_invalid_address)
                             }
                     }
                 }
@@ -183,9 +186,9 @@ fun QrScannerScreen(navController: NavController) {
             if (failed) {
                 Button(onClick = {
                     Global.allowQR = true
-                    text = "Connecting..."
+                    text = context.getString(R.string.msg_connecting)
                 }) {
-                    Text("Try again")
+                    Text(stringResource(R.string.btn_try_again))
                 }
             }
         }
@@ -204,6 +207,6 @@ fun RequestCameraPermission(onGranted: @Composable () -> Unit) {
     if (permissionState.status.isGranted) {
         onGranted()
     } else {
-        Text("Camera permission required")
+        Text(stringResource(R.string.msg_camera_permission_required))
     }
 }

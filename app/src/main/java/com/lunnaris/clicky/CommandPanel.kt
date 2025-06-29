@@ -1,42 +1,27 @@
 package com.lunnaris.clicky
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-data class Command(val label: String, val command: String, val iconRes: Int? = null) {
-    constructor(label: String, iconRes: Int?): this(label, label, iconRes)
-}
+data class Command(val label: String, val command: String, val iconRes: Int? = null)
 
-val commands = listOf(
-    // Command("backspace", R.drawable.backspace),
-    Command("mute", R.drawable.volume_mute),
-    Command("vol. down", "vol_down", R.drawable.volume_minus),
-    Command("vol. up", "vol_up", R.drawable.volume_plus),
-    Command("backward", R.drawable.skip_backward),
-    Command("play/pause", "play_pause", R.drawable.play_pause),
-    Command("forward", R.drawable.skip_forward),
-)
 
 
 @Composable
@@ -71,6 +56,15 @@ fun CommandButton(command: Command, modifier: Modifier, onClick: (String) -> Uni
 
 @Composable
 fun CommandPanel(onCommandSend: (String) -> Unit) {
+    val commands = listOf(
+        Command(stringResource(R.string.cmd_mute),"mute", R.drawable.volume_mute),
+        Command(stringResource(R.string.cmd_vol_down), "vol_down", R.drawable.volume_minus),
+        Command(stringResource(R.string.cmd_vol_up), "vol_up", R.drawable.volume_plus),
+        Command(stringResource(R.string.cmd_previous),"backward", R.drawable.skip_backward),
+        Command(stringResource(R.string.cmd_play_pause), "play_pause", R.drawable.play_pause),
+        Command(stringResource(R.string.cmd_next),"forward", R.drawable.skip_forward),
+    )
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {

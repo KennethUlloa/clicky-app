@@ -1,3 +1,45 @@
 <resources>
-    <string name="app_name">Clicky</string>
+    <string name="app_name" translatable="false">Clicky</string>
+    <string name="no_device">NO DEVICE</string>
+    <string name="home">Home</string>
+    <string name="keyboard">Keyboard</string>
+    <string name="connect">Connect</string>
+    <string name="settings">Settings</string>
+    <string name="text_send_placeholder">Text send...</string>
+    <string name="server_address">Server address</string>
+    <string name="secret">Secret</string>
+    <string name="inverse_scroll">Inverse scroll</string>
+    <string name="show_click_buttons">Show click buttons</string>
+    <string name="drag_velocity">Drag velocity</string>
+    <string name="scroll_velocity">Scroll velocity</string>
+    <string name="error_110">The user can\'t perform the current action.</string>
+    <string name="error_120">The user can\'t be logged in with the current method.</string>
+    <string name="error_130">The device is already being controlled by other device.</string>
+    <string name="error_140">Wrong credentials.</string>
+    <string name="error_150">The user isn\'t allowed to control the device.</string>
+    <string name="error_100">Generic App error</string>
+    <string name="cmd_vol_up">Vol. Up</string>
+    <string name="cmd_vol_down">Vol. Down</string>
+    <string name="cmd_mute">Mute</string>
+    <string name="cmd_previous">Previous</string>
+    <string name="cmd_next">Next</string>
+    <string name="cmd_play_pause" translatable="false">Play/Pause</string>
+    <string name="btn_try_again">Try again.</string>
+    <string name="msg_successful_login">Successfully aquired control</string>
+    <string name="msg_successfully_quit">Successfully quit control</string>
+    <string name="btn_right_click">Right click</string>
+    <string name="btn_left_click">Left click</string>
+    <string name="error_title" translatable="false">Error</string>
+    <string name="error_message">An unexpected error ocurred.</string>
+    <string name="msg_success">Success</string>
+    <string name="btn_connect">Connect</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="btn_send">Send</string>
+    <string name="msg_connecting">Connecting...</string>
+    <string name="msg_wrong_qr_string_format">Wrong format, try with other code.</string>
+    <string name="msg_invalid_address">Invalid address.</string>
+    <string name="msg_camera_permission_required">Camera permission required</string>
+    <string name="msg_scan_the_qr">Scan the QR code</string>
+    <string name="title_connection">Connection</string>
+
 </resources>

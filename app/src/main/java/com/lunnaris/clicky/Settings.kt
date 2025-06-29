@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
@@ -26,11 +24,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
@@ -44,9 +42,10 @@ fun Settings(navController: NavController) {
     var secret by remember { mutableStateOf("") }
     var dragSensibility by remember { mutableFloatStateOf(Global.dragSensibility) }
     var scrollSensibility by remember { mutableFloatStateOf(Global.scrollSensibility) }
-    var message by remember { mutableStateOf<Message?>(null) }
+    var messageData by remember { mutableStateOf<MessageData?>(null) }
     var inverseScroll by remember { mutableStateOf(Global.inverseScroll) }
     var showClickButtons by remember { mutableStateOf(Global.showClickButtons) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -54,23 +53,27 @@ fun Settings(navController: NavController) {
         Column(
             modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            if (message != null) {
-                MessageElement(message!!)
+            if (messageData != null) {
+                MessageElement(messageData!!)
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Connection", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    stringResource(R.string.title_connection),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 TextField(
                     serverAddress, onValueChange = { serverAddress = it }, label = {
-                    Text("Server Address")
-                }, modifier = Modifier.fillMaxWidth()
+                        Text(stringResource(R.string.server_address))
+                    }, modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
                     secret, onValueChange = { secret = it }, label = {
-                    Text("Secret")
-                }, modifier = Modifier.fillMaxWidth()
+                        Text(stringResource(R.string.secret))
+                    }, modifier = Modifier.fillMaxWidth()
                 )
             }
             Row(
@@ -82,23 +85,17 @@ fun Settings(navController: NavController) {
                             API.quit()
                                 .onSuccess {
                                     API.quitSocket()
-                                    message = Message(
-                                        "Success",
-                                        "Successfully quit control",
+                                    messageData = MessageData(
+                                        context.getString(R.string.msg_success),
+                                        context.getString(R.string.msg_successfully_quit),
                                         MessageType.SUCCESS
                                     )
                                 }.onFailure {
-                                    val title = if (it is ApiException) { it.title } else { "APP ERROR" }
-                                    val body = it.message ?: "Unknown"
-                                    message = Message(
-                                        title,
-                                        body,
-                                        MessageType.ERROR
-                                    )
+                                    messageData = getFromError(it, context)
                                 }
                         }
                     }) {
-                    Text("Disconnect")
+                    Text(stringResource(R.string.btn_disconnect))
                 }
                 Spacer(modifier = Modifier.size(width = 10.dp, height = 1.dp))
                 Button(
@@ -106,31 +103,34 @@ fun Settings(navController: NavController) {
                         Global.serverAddress = serverAddress
                         scope.launch {
                             API.login(secret).onSuccess {
-                                    API.setToken(it.token).initSocket()
-                                    message = Message("Success", "Successfully connected", MessageType.SUCCESS)
-                                    delay(5000)
-                                    message = null
-                                }.onFailure {
-                                    val title = if (it is ApiException) { it.title } else { "APP ERROR" }
-                                    val body = it.message ?: "Unknown"
-                                    message = Message(
-                                        title,
-                                        body,
-                                        MessageType.ERROR
-                                    )
-                                    delay(5000)
-                                    message = null
-                                }
+                                API.setToken(it.token).initSocket()
+                                messageData = MessageData(
+                                    context.getString(R.string.msg_success),
+                                    context.getString(R.string.msg_successful_login),
+                                    MessageType.SUCCESS
+                                )
+                                delay(5000)
+                                messageData = null
+                            }.onFailure {
+                                messageData = getFromError(it, context)
+                                delay(5000)
+                                messageData = null
+                            }
                         }
                     }) {
-                    Text("Connect")
+                    Text(stringResource(R.string.btn_connect))
                 }
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(String.format("Drag velocity %.1f", dragSensibility))
+                Text(
+                    String.format(
+                        "${context.getString(R.string.drag_velocity)} %.1f",
+                        dragSensibility
+                    )
+                )
                 Slider(
                     dragSensibility, valueRange = 0.1f..3f, onValueChange = {
                         dragSensibility = it
@@ -141,7 +141,12 @@ fun Settings(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(String.format("Scroll velocity %.1f", scrollSensibility))
+                Text(
+                    String.format(
+                        "${context.getString(R.string.scroll_velocity)} %.1f",
+                        scrollSensibility
+                    )
+                )
                 Slider(
                     scrollSensibility, valueRange = 0.1f..3f, onValueChange = {
                         scrollSensibility = it
@@ -151,7 +156,7 @@ fun Settings(navController: NavController) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Inverse scroll")
+                Text(stringResource(R.string.inverse_scroll))
                 Checkbox(inverseScroll, onCheckedChange = {
                     inverseScroll = it
                     Global.inverseScroll = it
@@ -160,7 +165,7 @@ fun Settings(navController: NavController) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Show click buttons")
+                Text(stringResource(R.string.show_click_buttons))
                 Checkbox(showClickButtons, onCheckedChange = {
                     showClickButtons = it
                     Global.showClickButtons = it

@@ -13,11 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,9 +24,9 @@ import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.lunnaris.clicky.ui.theme.onSuccessContainer
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -110,9 +107,13 @@ fun Modifier.detectTouchpadGestures(
 }
 
 
-
 @Composable
-fun TouchPad(modifier: Modifier, onMove: (dx: Float, dy: Float) -> Unit, onClick: (dir: String) -> Unit, onScroll: (dy: Float) -> Unit) {
+fun TouchPad(
+    modifier: Modifier,
+    onMove: (dx: Float, dy: Float) -> Unit,
+    onClick: (dir: String) -> Unit,
+    onScroll: (dy: Float) -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier
@@ -132,7 +133,7 @@ fun TouchPad(modifier: Modifier, onMove: (dx: Float, dy: Float) -> Unit, onClick
                             onMove(dx * Global.dragSensibility, dy * Global.dragSensibility)
                         },
                         onClick = { dir ->
-                            when(dir) {
+                            when (dir) {
                                 Click.RIGHT -> onClick("right")
                                 Click.LEFT -> onClick("left")
                             }
@@ -156,13 +157,16 @@ fun TouchPad(modifier: Modifier, onMove: (dx: Float, dy: Float) -> Unit, onClick
                         )
                         .clickable {
                             onClick("left")
-                        }.weight(1f)
+                        }
+                        .weight(1f)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(
-                            horizontal = 10.dp,
-                            vertical = 15.dp
-                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 10.dp,
+                                vertical = 15.dp
+                            ),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -170,7 +174,7 @@ fun TouchPad(modifier: Modifier, onMove: (dx: Float, dy: Float) -> Unit, onClick
                             painter = painterResource(R.drawable.mouse_left_click_outline),
                             contentDescription = "Left click"
                         )
-                        Text("Left click")
+                        Text(stringResource(R.string.btn_left_click))
                     }
 
                 }
@@ -182,13 +186,16 @@ fun TouchPad(modifier: Modifier, onMove: (dx: Float, dy: Float) -> Unit, onClick
                         )
                         .clickable {
                             onClick("right")
-                        }.weight(1f)
+                        }
+                        .weight(1f)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(
-                            horizontal = 10.dp,
-                            vertical = 15.dp
-                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 10.dp,
+                                vertical = 15.dp
+                            ),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -196,7 +203,7 @@ fun TouchPad(modifier: Modifier, onMove: (dx: Float, dy: Float) -> Unit, onClick
                             painter = painterResource(R.drawable.mouse_right_click_outline),
                             contentDescription = "Right click"
                         )
-                        Text("Right click")
+                        Text(stringResource(R.string.btn_right_click))
                     }
 
                 }

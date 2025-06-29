@@ -2,50 +2,52 @@ package com.lunnaris.clicky
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+data class TextCommand(val command: String, val icon: Int)
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TextInput(onTextSend: (text: String) -> Unit, onCommandSend: (command: String) -> Unit) {
     var text by remember { mutableStateOf("") }
+
+    val commands = listOf(
+        TextCommand("enter", R.drawable.keyboard_return),
+        TextCommand("backspace", R.drawable.backspace)
+    )
+
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         TextField(
             text,
             onValueChange = { text = it },
-            label = { Text("Text") },
+            label = { Text(stringResource(R.string.text_send_placeholder)) },
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Send
             ),
             keyboardActions = KeyboardActions(
-                onDone = {
+                onSend = {
                     onTextSend(text)
                     text = ""
                 }
@@ -57,31 +59,27 @@ fun TextInput(onTextSend: (text: String) -> Unit, onCommandSend: (command: Strin
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Spacer(Modifier.weight(1f))
-            OutlinedButton(
-                onClick = {
-                    onCommandSend("enter")
+
+            commands.forEach {
+                key(it.command) {
+                    OutlinedButton(
+                        onClick = {
+                            onCommandSend(it.command)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(it.icon),
+                            contentDescription = it.command
+                        )
+                    }
                 }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.keyboard_return),
-                    contentDescription = "enter"
-                )
             }
-            OutlinedButton(
-                onClick = {
-                    onCommandSend("backspace")
-                }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.backspace),
-                    contentDescription = "backpace"
-                )
-            }
+
             Button(onClick = {
                 onTextSend(text)
                 text = ""
             }) {
-                Text("Send")
+                Text(stringResource(R.string.btn_send))
             }
         }
 

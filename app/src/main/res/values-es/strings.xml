@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_device">Sin dispositivo</string>
+    <string name="home">Inicio</string>
+    <string name="keyboard">Teclado</string>
+    <string name="connect">Conectarse</string>
+    <string name="settings">Ajustes</string>
+    <string name="text_send_placeholder">Enviar texto...</string>
+    <string name="server_address">Dirección del servidor</string>
+    <string name="secret">Secreto</string>
+    <string name="inverse_scroll">Desplazamiento (scroll) invertido</string>
+    <string name="show_click_buttons">Mostrar botones de \'Click\'</string>
+    <string name="drag_velocity">Velocidad de movimiento</string>
+    <string name="scroll_velocity">Velocidad de desplazamiento</string>
+    <string name="error_110">El usuario no puede ejecutar esta acción.</string>
+    <string name="error_120">El usuario no puede ingresar con este método.</string>
+    <string name="error_130">El dispositivo ya está siendo controlado por otro dispositivo.</string>
+    <string name="error_140">Credenciales inválidas.</string>
+    <string name="error_150">El usuario no puede controlar este dispositivo.</string>
+    <string name="error_100">Error genérico de la aplicación.</string>
+    <string name="cmd_vol_up">Subir vol.</string>
+    <string name="cmd_vol_down">Bajar vol.</string>
+    <string name="cmd_mute">Mutear</string>
+    <string name="cmd_previous">Anterior</string>
+    <string name="cmd_next">Siguiente</string>
+    <string name="btn_try_again">Intentar de nuevo</string>
+    <string name="msg_successful_login">Se obtuvo el control exitosamente.</string>
+    <string name="msg_successfully_quit">Se retiró el control exitosamente.</string>
+    <string name="btn_right_click">Click derecho</string>
+    <string name="btn_left_click">Click izquierdo</string>
+    <string name="error_message">Ocurrió un error inesperado.</string>
+    <string name="msg_success">Éxito</string>
+    <string name="btn_connect">Conectarse</string>
+    <string name="btn_disconnect">Desconectarse</string>
+    <string name="btn_send">Enviar</string>
+    <string name="msg_connecting">Conectando...</string>
+    <string name="msg_wrong_qr_string_format">Formato incorrecto, intenta con otro código.</string>
+    <string name="msg_invalid_address">Dirección inválida.</string>
+    <string name="msg_camera_permission_required">Se requieren permisos para usar la cámara</string>
+    <string name="msg_scan_the_qr">Escanea el código QR</string>
+    <string name="title_connection">Conexión</string>
+</resources>

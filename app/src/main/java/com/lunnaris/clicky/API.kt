@@ -1,28 +1,25 @@
 package com.lunnaris.clicky
 
+import android.content.Context
 import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.utils.io.errors.IOException
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
@@ -50,7 +47,28 @@ data class DeviceResponse(val deviceName: String)
 @Serializable
 data class CodeRequest(val code: String)
 
-class ApiException(val title: String, message: String) : Exception(message)
+class ApiException(val code: Int, val appCode: Int) : Exception("Api Error $code ($appCode)")
+
+suspend fun handleHttpException(response: HttpResponse): ApiException {
+    val errorBody = response.bodyAsText()
+    val json = JSONObject(errorBody)
+    return try {
+        ApiException(json.getInt("code"), json.getInt("app_code"))
+    } catch (e: Exception) {
+        ApiException(response.status.value, -100)
+    }
+}
+
+fun getAppErrorMessage(context: Context, code: Int) : String {
+    return when(code) {
+        -110 -> context.getString(R.string.error_110)
+        -120 -> context.getString(R.string.error_120)
+        -130 -> context.getString(R.string.error_130)
+        -140 -> context.getString(R.string.error_140)
+        -150 -> context.getString(R.string.error_150)
+        else -> context.getString(R.string.error_100)
+    }
+}
 
 class API {
     companion object {
@@ -95,7 +113,7 @@ class API {
                 this.socket!!.emit(event, token, *data)
                 return Result.success(Unit)
             } catch (e: Exception) {
-                return Result.failure(ApiException("WebSocket Error", "${e.message}"))
+                return Result.failure(Exception("Socket error: ${e.message}"))
             }
         }
 
@@ -148,46 +166,10 @@ class API {
         ): Result<T> {
             return try {
                 Result.success(block())
-            } catch (e: ClientRequestException) {
-                val errorBody = e.response.bodyAsText()
-                val json = JSONObject(errorBody)
-                val title = if (json.has("error")) {
-                    json["error"].toString()
-                } else {
-                    "Error"
-                }
-                val msg = if (json.has("reason")) {
-                    json["reason"].toString()
-                } else {
-                    "Unknown error"
-                }
-                Result.failure(
-                    ApiException(title, msg)
-                )
-            } catch (e: ServerResponseException) {
-                val errorBody = e.response.bodyAsText()
-                val json = JSONObject(errorBody)
-                val title = if (json.has("error")) {
-                    json["error"].toString()
-                } else {
-                    "Error"
-                }
-                val msg = if (json.has("reason")) {
-                    json["reason"].toString()
-                } else {
-                    "Unknown error"
-                }
-                Result.failure(
-                    ApiException(title, msg)
-                )
             } catch (e: ResponseException) {
-                Result.failure(ApiException("HTTP error", "${e.response.status}"))
-            } catch (e: SerializationException) {
-                Result.failure(ApiException("App Error", "Error deserializing the response"))
-            } catch (e: IOException) {
-                Result.failure(ApiException("Network Error", "${e.message}"))
+                Result.failure(handleHttpException(e.response))
             } catch (e: Exception) {
-                Result.failure(ApiException("App Error", "${e.message}"))
+                Result.failure(e)
             }
         }
     }
